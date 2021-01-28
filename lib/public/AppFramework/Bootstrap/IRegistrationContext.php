@@ -30,6 +30,7 @@ declare(strict_types=1);
 namespace OCP\AppFramework\Bootstrap;
 
 use OCP\AppFramework\IAppContainer;
+use OCP\Capabilities\ICapability;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IContainer;
 
@@ -43,6 +44,7 @@ interface IRegistrationContext {
 
 	/**
 	 * @param string $capability
+	 * @psalm-param class-string<ICapability> $capability
 	 * @see IAppContainer::registerCapability
 	 *
 	 * @since 20.0.0
