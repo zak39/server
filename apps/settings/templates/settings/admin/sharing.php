@@ -187,6 +187,13 @@
 } ?> />
 			<label for="onlyShareWithGroupMembers"><?php p($l->t('Restrict users to only share with users in their groups'));?></label><br/>
 		</p>
+		<p id="selectShareWithGroupMembersExcludeGroups" class="indent <?php if (!$_['onlyShareWithGroupMembers'] || $_['shareAPIEnabled'] === 'no') {
+	p('hidden');
+} ?>">
+			 <em><?php p($l->t('Exclude some groups from sharing with users in their group')); ?></em>
+			 <br />
+			<input name="shareapi_only_share_with_group_members_exclude_group_list" type="hidden" id="shareGroupMembersExcludeGroups" value="<?php p($_['shareWithGroupMembersExcludeGroupsList']) ?>" style="width: 400px" class="noJSAutoUpdate"/>
+		</p>
 		<p class="<?php if ($_['shareAPIEnabled'] === 'no') {
 	p('hidden');
 }?>">

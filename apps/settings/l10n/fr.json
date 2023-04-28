@@ -514,6 +514,7 @@
     "Allow resharing" : "Autoriser le repartage",
     "Allow sharing with groups" : "Autoriser le partage avec les groupes",
     "Restrict users to only share with users in their groups" : "N'autoriser les partages qu'entre membres de mêmes groupes",
+    "Exclude some groups from sharing with users in their group" : "Empêcher certains groupes de partager avec les utilisateurs de leur groupe",
     "Exclude groups from sharing" : "Empêcher certains groupes de partager",
     "These groups will still be able to receive shares, but not to initiate them." : "Ces groupes ne pourront plus initier de partage, mais ils pourront toujours rejoindre les partages faits par d'autres. ",
     "Allow username autocompletion in share dialog and allow access to the system address book" : "Autoriser l'autocomplétion du nom d'utilisateur dans le dialogue de partage et permettre l'accès au carnet d'adresses du système",

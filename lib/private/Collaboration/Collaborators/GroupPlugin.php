@@ -45,6 +45,8 @@ class GroupPlugin implements ISearchPlugin {
 	protected $shareeEnumerationInGroupOnly;
 	/** @var bool */
 	protected $groupSharingDisabled;
+	/** @var array */
+	protected $shareWithGroupOnlyExcludeGroupsList;
 
 	/** @var IGroupManager */
 	private $groupManager;
@@ -62,6 +64,14 @@ class GroupPlugin implements ISearchPlugin {
 		$this->shareWithGroupOnly = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members', 'no') === 'yes';
 		$this->shareeEnumerationInGroupOnly = $this->shareeEnumeration && $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_to_group', 'no') === 'yes';
 		$this->groupSharingDisabled = $this->config->getAppValue('core', 'shareapi_allow_group_sharing', 'yes') === 'no';
+
+		if ($this->shareWithGroupOnly) {
+			$shareWithGroupOnlyExcludeGroups = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', '');
+			$decodedExcludeGroups = json_decode($shareWithGroupOnlyExcludeGroups, true);
+			$this->shareWithGroupOnlyExcludeGroupsList = $decodedExcludeGroups ?? [];
+		} else {
+			$this->shareWithGroupOnlyExcludeGroupsList = [];
+		}
 	}
 
 	public function search($search, $limit, $offset, ISearchResult $searchResult) {
@@ -89,6 +99,9 @@ class GroupPlugin implements ISearchPlugin {
 				return $group->getGID();
 			}, $userGroups);
 			$groupIds = array_intersect($groupIds, $userGroups);
+
+			// ShareWithGroupOnly filtering
+			$groupIds = array_diff( $groupIds, $this->shareWithGroupOnlyExcludeGroupsList);
 		}
 
 		$lowerSearch = strtolower($search);

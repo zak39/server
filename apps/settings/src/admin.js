@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
-	$('#linksExcludedGroups,#passwordsExcludedGroups').each(function(index, element) {
+	$('#excludedGroups,#shareGroupMembersExcludeGroups,#linksExcludedGroups,#passwordsExcludedGroups').each(function(index, element) {
 		OC.Settings.setupGroupsSelect($(element))
 		$(element).change(function(ev) {
 			let groups = ev.val || []
@@ -227,6 +227,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	$('#shareapiExcludeGroups').change(function() {
 		$('#selectExcludedGroups').toggleClass('hidden', !this.checked)
+	})
+
+	$('#onlyShareWithGroupMembers').change(function() {
+		$('#selectShareWithGroupMembersExcludeGroups').toggleClass('hidden', !this.checked)
 	})
 
 	const setupChecks = () => {

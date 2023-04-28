@@ -53,6 +53,8 @@ class MailPlugin implements ISearchPlugin {
 	protected $shareeEnumerationFullMatch;
 	/* @var bool */
 	protected $shareeEnumerationFullMatchEmail;
+	/** @var array */
+	protected $shareWithGroupOnlyExcludeGroupsList;
 
 	/** @var IManager */
 	private $contactsManager;
@@ -91,6 +93,14 @@ class MailPlugin implements ISearchPlugin {
 		$this->shareeEnumerationPhone = $this->shareeEnumeration && $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_to_phone', 'no') === 'yes';
 		$this->shareeEnumerationFullMatch = $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_full_match', 'yes') === 'yes';
 		$this->shareeEnumerationFullMatchEmail = $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_full_match_email', 'yes') === 'yes';
+
+		if ($this->shareWithGroupOnly) {
+			$shareWithGroupOnlyExcludeGroups = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', '');
+			$decodedExcludeGroups = json_decode($shareWithGroupOnlyExcludeGroups, true);
+			$this->shareWithGroupOnlyExcludeGroupsList = $decodedExcludeGroups ?? [];
+		} else {
+			$this->shareWithGroupOnlyExcludeGroupsList = [];
+		}
 	}
 
 	/**
@@ -150,6 +160,10 @@ class MailPlugin implements ISearchPlugin {
 							 * Check if the user may share with the user associated with the e-mail of the just found contact
 							 */
 							$userGroups = $this->groupManager->getUserGroupIds($this->userSession->getUser());
+
+							// ShareWithGroupOnly filtering
+							$userGroups = array_diff( $userGroups, $this->shareWithGroupOnlyExcludeGroupsList);
+
 							$found = false;
 							foreach ($userGroups as $userGroup) {
 								if ($this->groupManager->isInGroup($contact['UID'], $userGroup)) {
