@@ -525,7 +525,6 @@ OC.L10N.register(
     "Allow resharing" : "Allow resharing",
     "Allow sharing with groups" : "Allow sharing with groups",
     "Restrict users to only share with users in their groups" : "Restrict users to only share with users in their groups",
-    "Exclude some groups from sharing with users in their group" : "Exclude some groups from sharing with users in their group",
     "Exclude groups from sharing" : "Exclude groups from sharing",
     "These groups will still be able to receive shares, but not to initiate them." : "These groups will still be able to receive shares, but not to initiate them.",
     "Allow username autocompletion in share dialog and allow access to the system address book" : "Allow username autocompletion in share dialog and allow access to the system address book",
