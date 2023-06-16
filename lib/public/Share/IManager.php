@@ -422,7 +422,7 @@ interface IManager {
 	 * @return array
 	 * @since 27.0.0
 	 */
-	public function shareWithGroupMembersOnlyExcludedGroupsList();
+	public function shareWithGroupMembersOnlyExcludeGroupsList();
 
 	/**
 	 * Check if users can share with groups

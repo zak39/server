@@ -550,7 +550,7 @@ class Manager implements IManager {
 			);
 
 			// optional excluded groups
-			$excludedGroups = $this->shareWithGroupMembersOnlyExcludedGroupsList();
+			$excludedGroups = $this->shareWithGroupMembersOnlyExcludeGroupsList();
 			$groups = array_diff($groups, $excludedGroups);
 
 			if (empty($groups)) {
@@ -615,7 +615,7 @@ class Manager implements IManager {
 			$sharedWith = $this->groupManager->get($share->getSharedWith());
 
 			// optional excluded groups
-			$excludedGroups = $this->shareWithGroupMembersOnlyExcludedGroupsList();
+			$excludedGroups = $this->shareWithGroupMembersOnlyExcludeGroupsList();
 			if (is_null($sharedWith) || in_array($share->getSharedWith(), $excludedGroups) || !$sharedWith->inGroup($sharedBy)) {
 				throw new \Exception('Sharing is only allowed within your own groups');
 			}
@@ -1959,13 +1959,12 @@ class Manager implements IManager {
 	 *
 	 * @return array
 	 */
-	public function shareWithGroupMembersOnlyExcludedGroupsList() {
+	public function shareWithGroupMembersOnlyExcludeGroupsList() {
 		if (!$this->shareWithGroupMembersOnly()) {
 			return [];
 		}
 		$excludeGroups = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', '');
-		$decodedExcludeGroups = json_decode($excludeGroups, true);
-		return $decodedExcludeGroups ?? [];
+		return json_decode($excludeGroups, true) ?? [];
 	}
 
 	/**

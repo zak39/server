@@ -190,7 +190,7 @@
 		<p id="selectShareWithGroupMembersExcludeGroups" class="indent <?php if (!$_['onlyShareWithGroupMembers'] || $_['shareAPIEnabled'] === 'no') {
 	p('hidden');
 } ?>">
-			 <em><?php p($l->t('Ignore the following groups when checking group membership')); ?></em>
+			 <em><?php p($l->t('Ignore these groups for the sharing restriction')); ?></em>
 			 <br />
 			<input name="shareapi_only_share_with_group_members_exclude_group_list" type="hidden" id="shareGroupMembersExcludeGroups" value="<?php p($_['shareWithGroupMembersExcludeGroupsList']) ?>" style="width: 400px" class="noJSAutoUpdate"/>
 		</p>

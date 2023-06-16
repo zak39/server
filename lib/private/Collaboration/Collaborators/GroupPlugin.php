@@ -57,9 +57,7 @@ class GroupPlugin implements ISearchPlugin {
 		$this->groupSharingDisabled = $this->config->getAppValue('core', 'shareapi_allow_group_sharing', 'yes') === 'no';
 
 		if ($this->shareWithGroupOnly) {
-			$shareWithGroupOnlyExcludeGroups = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', '');
-			$decodedExcludeGroups = json_decode($shareWithGroupOnlyExcludeGroups, true);
-			$this->shareWithGroupOnlyExcludeGroupsList = $decodedExcludeGroups ?? [];
+			$this->shareWithGroupOnlyExcludeGroupsList = json_decode($this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', ''), true) ?? [];
 		} else {
 			$this->shareWithGroupOnlyExcludeGroupsList = [];
 		}

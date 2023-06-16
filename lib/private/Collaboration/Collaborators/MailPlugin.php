@@ -71,9 +71,7 @@ class MailPlugin implements ISearchPlugin {
 		$this->shareeEnumerationFullMatchEmail = $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_full_match_email', 'yes') === 'yes';
 
 		if ($this->shareWithGroupOnly) {
-			$shareWithGroupOnlyExcludeGroups = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', '');
-			$decodedExcludeGroups = json_decode($shareWithGroupOnlyExcludeGroups, true);
-			$this->shareWithGroupOnlyExcludeGroupsList = $decodedExcludeGroups ?? [];
+			$this->shareWithGroupOnlyExcludeGroupsList = json_decode($this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', ''), true) ?? [];
 		} else {
 			$this->shareWithGroupOnlyExcludeGroupsList = [];
 		}
