@@ -147,8 +147,7 @@ class ContactsStore implements IContactsStore {
 		// ownGroupsOnly : some groups may be excluded
 		if ($ownGroupsOnly) {
 			$excludeGroupsFromOwnGroups = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members_exclude_group_list', '');
-			$decodedExcludeGroupsFromOwnGroups = json_decode($excludeGroupsFromOwnGroups, true);
-			$excludeGroupsFromOwnGroupsList = $decodedExcludeGroupsFromOwnGroups ?? [];
+			$excludeGroupsFromOwnGroupsList = json_decode($excludeGroupsFromOwnGroups, true) ?? [];
 			$selfGroups = array_diff($selfGroups, $excludeGroupsFromOwnGroupsList);
 		}
 
