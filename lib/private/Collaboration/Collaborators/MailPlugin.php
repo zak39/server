@@ -61,6 +61,7 @@ class MailPlugin implements ISearchPlugin {
 		private KnownUserService $knownUserService,
 		private IUserSession $userSession,
 		private IMailer $mailer,
+		private mixed $shareWithGroupOnlyExcludeGroupsList,
 	) {
 		$this->shareeEnumeration = $this->config->getAppValue('core', 'shareapi_allow_share_dialog_user_enumeration', 'yes') === 'yes';
 		$this->shareWithGroupOnly = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members', 'no') === 'yes';
