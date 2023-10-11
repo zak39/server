@@ -44,52 +44,30 @@ use OCP\Share\IShare;
 use OCP\UserStatus\IManager as IUserStatusManager;
 
 class UserPlugin implements ISearchPlugin {
-	/* @var bool */
-	protected $shareWithGroupOnly;
-	/* @var bool */
-	protected $shareeEnumeration;
-	/* @var bool */
-	protected $shareeEnumerationInGroupOnly;
-	/* @var bool */
-	protected $shareeEnumerationPhone;
-	/* @var bool */
-	protected $shareeEnumerationFullMatch;
-	/* @var bool */
-	protected $shareeEnumerationFullMatchUserId;
-	/* @var bool */
-	protected $shareeEnumerationFullMatchEmail;
-	/* @var bool */
-	protected $shareeEnumerationFullMatchIgnoreSecondDisplayName;
-	/** @var array */
-	protected $shareWithGroupOnlyExcludeGroupsList;
+	protected bool $shareWithGroupOnly;
 
-	/** @var IConfig */
-	private $config;
-	/** @var IGroupManager */
-	private $groupManager;
-	/** @var IUserSession */
-	private $userSession;
-	/** @var IUserManager */
-	private $userManager;
-	/** @var KnownUserService */
-	private $knownUserService;
-	/** @var IUserStatusManager */
-	private $userStatusManager;
+	protected bool $shareeEnumeration;
 
-	public function __construct(IConfig $config,
-								IUserManager $userManager,
-								IGroupManager $groupManager,
-								IUserSession $userSession,
-								KnownUserService $knownUserService,
-								IUserStatusManager $userStatusManager) {
-		$this->config = $config;
+	protected bool $shareeEnumerationInGroupOnly;
 
-		$this->groupManager = $groupManager;
-		$this->userSession = $userSession;
-		$this->userManager = $userManager;
-		$this->knownUserService = $knownUserService;
-		$this->userStatusManager = $userStatusManager;
+	protected bool $shareeEnumerationPhone;
 
+	protected bool $shareeEnumerationFullMatch;
+
+	protected bool $shareeEnumerationFullMatchUserId;
+
+	protected bool $shareeEnumerationFullMatchEmail;
+
+	protected bool $shareeEnumerationFullMatchIgnoreSecondDisplayName;
+
+	public function __construct(
+		private IConfig $config,
+		private IUserManager $userManager,
+		private IGroupManager $groupManager,
+		private IUserSession $userSession,
+		private KnownUserService $knownUserService,
+		private IUserStatusManager $userStatusManager,
+	) {
 		$this->shareWithGroupOnly = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members', 'no') === 'yes';
 		$this->shareeEnumeration = $this->config->getAppValue('core', 'shareapi_allow_share_dialog_user_enumeration', 'yes') === 'yes';
 		$this->shareeEnumerationInGroupOnly = $this->shareeEnumeration && $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_to_group', 'no') === 'yes';
@@ -108,7 +86,7 @@ class UserPlugin implements ISearchPlugin {
 		}
 	}
 
-	public function search($search, $limit, $offset, ISearchResult $searchResult) {
+	public function search($search, $limit, $offset, ISearchResult $searchResult): bool {
 		$result = ['wide' => [], 'exact' => []];
 		$users = [];
 		$hasMoreResults = false;
@@ -296,8 +274,6 @@ class UserPlugin implements ISearchPlugin {
 			}
 		}
 
-
-
 		$type = new SearchResultType('users');
 		$searchResult->addResultSet($type, $result['wide'], $result['exact']);
 		if (count($result['exact'])) {
@@ -307,7 +283,7 @@ class UserPlugin implements ISearchPlugin {
 		return $hasMoreResults;
 	}
 
-	public function takeOutCurrentUser(array &$users) {
+	public function takeOutCurrentUser(array &$users): void {
 		$currentUser = $this->userSession->getUser();
 		if (!is_null($currentUser)) {
 			if (isset($users[$currentUser->getUID()])) {
