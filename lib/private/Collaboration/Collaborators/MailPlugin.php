@@ -138,7 +138,7 @@ class MailPlugin implements ISearchPlugin {
 							$userGroups = $this->groupManager->getUserGroupIds($this->userSession->getUser());
 
 							// ShareWithGroupOnly filtering
-							$userGroups = array_diff( $userGroups, $this->shareWithGroupOnlyExcludeGroupsList);
+							$userGroups = array_diff($userGroups, $this->shareWithGroupOnlyExcludeGroupsList);
 
 							$found = false;
 							foreach ($userGroups as $userGroup) {

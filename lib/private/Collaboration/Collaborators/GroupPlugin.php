@@ -92,7 +92,7 @@ class GroupPlugin implements ISearchPlugin {
 			$groupIds = array_intersect($groupIds, $userGroups);
 
 			// ShareWithGroupOnly filtering
-			$groupIds = array_diff( $groupIds, $this->shareWithGroupOnlyExcludeGroupsList);
+			$groupIds = array_diff($groupIds, $this->shareWithGroupOnlyExcludeGroupsList);
 		}
 
 		$lowerSearch = strtolower($search);

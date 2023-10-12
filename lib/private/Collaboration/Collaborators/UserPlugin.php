@@ -96,7 +96,7 @@ class UserPlugin implements ISearchPlugin {
 		$currentUserGroups = $this->groupManager->getUserGroupIds($this->userSession->getUser());
 
 		// ShareWithGroupOnly filtering
-		$currentUserGroups = array_diff( $currentUserGroups, $this->shareWithGroupOnlyExcludeGroupsList);
+		$currentUserGroups = array_diff($currentUserGroups, $this->shareWithGroupOnlyExcludeGroupsList);
 
 		if ($this->shareWithGroupOnly || $this->shareeEnumerationInGroupOnly) {
 			// Search in all the groups this user is part of
