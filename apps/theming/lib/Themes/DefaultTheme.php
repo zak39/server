@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2022 Joas Schilling <coding@schilljs.com>
@@ -51,13 +52,13 @@ class DefaultTheme implements ITheme {
 	public string $primaryColor;
 
 	public function __construct(Util $util,
-								ThemingDefaults $themingDefaults,
-								IUserSession $userSession,
-								IURLGenerator $urlGenerator,
-								ImageManager $imageManager,
-								IConfig $config,
-								IL10N $l,
-								IAppManager $appManager) {
+		ThemingDefaults $themingDefaults,
+		IUserSession $userSession,
+		IURLGenerator $urlGenerator,
+		ImageManager $imageManager,
+		IConfig $config,
+		IL10N $l,
+		IAppManager $appManager) {
 		$this->util = $util;
 		$this->themingDefaults = $themingDefaults;
 		$this->userSession = $userSession;
@@ -70,7 +71,7 @@ class DefaultTheme implements ITheme {
 		$this->defaultPrimaryColor = $this->themingDefaults->getDefaultColorPrimary();
 		$this->primaryColor = $this->themingDefaults->getColorPrimary();
 
-		// Override default defaultPrimaryColor if set to improve accessibility
+		// Override primary colors (if set) to improve accessibility
 		if ($this->primaryColor === BackgroundService::DEFAULT_COLOR) {
 			$this->primaryColor = BackgroundService::DEFAULT_ACCESSIBLE_COLOR;
 		}
@@ -103,7 +104,8 @@ class DefaultTheme implements ITheme {
 	public function getCSSVariables(): array {
 		$colorMainText = '#222222';
 		$colorMainTextRgb = join(',', $this->util->hexToRGB($colorMainText));
-		$colorTextMaxcontrast = $this->util->lighten($colorMainText, 33);
+		// Color that still provides enough contrast for text, so we need a ratio of 4.5:1 on main background AND hover
+		$colorTextMaxcontrast = '#6b6b6b'; // 4.5 : 1 for hover background and background dark
 		$colorMainBackground = '#ffffff';
 		$colorMainBackgroundRGB = join(',', $this->util->hexToRGB($colorMainBackground));
 		$colorBoxShadow = $this->util->darken($colorMainBackground, 70);
@@ -137,8 +139,8 @@ class DefaultTheme implements ITheme {
 			'--color-text-maxcontrast' => $colorTextMaxcontrast,
 			'--color-text-maxcontrast-default' => $colorTextMaxcontrast,
 			'--color-text-maxcontrast-background-blur' => $this->util->darken($colorTextMaxcontrast, 7),
-			'--color-text-light' => $colorMainText,
-			'--color-text-lighter' => $this->util->lighten($colorMainText, 33),
+			'--color-text-light' => 'var(--color-main-text)', // deprecated
+			'--color-text-lighter' => 'var(--color-text-maxcontrast)', // deprecated
 
 			'--color-scrollbar' => 'rgba(' . $colorMainTextRgb . ', .15)',
 
@@ -150,7 +152,7 @@ class DefaultTheme implements ITheme {
 			'--color-warning' => $colorWarning,
 			'--color-warning-rgb' => join(',', $this->util->hexToRGB($colorWarning)),
 			'--color-warning-hover' => $this->util->mix($colorWarning, $colorMainBackground, 60),
-			'--color-warning-text' => $this->util->darken($colorWarning, 8),
+			'--color-warning-text' => $this->util->darken($colorWarning, 10),
 			'--color-success' => $colorSuccess,
 			'--color-success-rgb' => join(',', $this->util->hexToRGB($colorSuccess)),
 			'--color-success-hover' => $this->util->mix($colorSuccess, $colorMainBackground, 78),

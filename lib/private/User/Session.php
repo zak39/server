@@ -120,14 +120,14 @@ class Session implements IUserSession, Emitter {
 	private $dispatcher;
 
 	public function __construct(Manager $manager,
-								ISession $session,
-								ITimeFactory $timeFactory,
-								?IProvider $tokenProvider,
-								IConfig $config,
-								ISecureRandom $random,
-								ILockdownManager $lockdownManager,
-								LoggerInterface $logger,
-								IEventDispatcher $dispatcher
+		ISession $session,
+		ITimeFactory $timeFactory,
+		?IProvider $tokenProvider,
+		IConfig $config,
+		ISecureRandom $random,
+		ILockdownManager $lockdownManager,
+		LoggerInterface $logger,
+		IEventDispatcher $dispatcher
 	) {
 		$this->manager = $manager;
 		$this->session = $session;
@@ -425,9 +425,9 @@ class Session implements IUserSession, Emitter {
 	 * @return boolean
 	 */
 	public function logClientIn($user,
-								$password,
-								IRequest $request,
-								IThrottler $throttler) {
+		$password,
+		IRequest $request,
+		IThrottler $throttler) {
 		$remoteAddress = $request->getRemoteAddress();
 		$currentDelay = $throttler->sleepDelayOrThrowOnMax($remoteAddress, 'login');
 
@@ -576,7 +576,7 @@ class Session implements IUserSession, Emitter {
 	 * @return boolean if the login was successful
 	 */
 	public function tryBasicAuthLogin(IRequest $request,
-									  IThrottler $throttler) {
+		IThrottler $throttler) {
 		if (!empty($request->server['PHP_AUTH_USER']) && !empty($request->server['PHP_AUTH_PW'])) {
 			try {
 				if ($this->logClientIn($request->server['PHP_AUTH_USER'], $request->server['PHP_AUTH_PW'], $request, $throttler)) {
@@ -783,7 +783,7 @@ class Session implements IUserSession, Emitter {
 		try {
 			$dbToken = $this->tokenProvider->getToken($token);
 		} catch (InvalidTokenException $ex) {
-			$this->logger->warning('Session token is invalid because it does not exist', [
+			$this->logger->debug('Session token is invalid because it does not exist', [
 				'app' => 'core',
 				'user' => $user,
 				'exception' => $ex,
@@ -916,9 +916,10 @@ class Session implements IUserSession, Emitter {
 			]);
 			return false;
 		} catch (InvalidTokenException $ex) {
-			$this->logger->error('Renewing session token failed', [
+			$this->logger->error('Renewing session token failed: ' . $ex->getMessage(), [
 				'app' => 'core',
 				'user' => $uid,
+				'exception' => $ex,
 			]);
 			return false;
 		}

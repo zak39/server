@@ -44,21 +44,22 @@
  */
 namespace OCA\Files_Trashbin;
 
-use OC_User;
 use OC\Files\Cache\Cache;
 use OC\Files\Cache\CacheEntry;
 use OC\Files\Cache\CacheQueryBuilder;
 use OC\Files\Filesystem;
 use OC\Files\ObjectStore\ObjectStoreStorage;
 use OC\Files\View;
+use OC_User;
 use OCA\Files_Trashbin\AppInfo\Application;
 use OCA\Files_Trashbin\Command\Expire;
-use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\App\IAppManager;
+use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
+use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\IConfig;
 use OCP\Lock\ILockingProvider;
 use OCP\Lock\LockedException;
@@ -993,7 +994,8 @@ class Trashbin {
 		$query = new CacheQueryBuilder(
 			\OC::$server->getDatabaseConnection(),
 			\OC::$server->getSystemConfig(),
-			\OC::$server->get(LoggerInterface::class)
+			\OC::$server->get(LoggerInterface::class),
+			\OC::$server->get(IFilesMetadataManager::class),
 		);
 		$normalizedParentPath = ltrim(Filesystem::normalizePath(dirname('files_trashbin/versions/'. $filename)), '/');
 		$parentId = $cache->getId($normalizedParentPath);

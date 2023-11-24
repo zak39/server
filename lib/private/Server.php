@@ -102,6 +102,7 @@ use OC\Files\Storage\StorageFactory;
 use OC\Files\Template\TemplateManager;
 use OC\Files\Type\Loader;
 use OC\Files\View;
+use OC\FilesMetadata\FilesMetadataManager;
 use OC\FullTextSearch\FullTextSearchManager;
 use OC\Http\Client\ClientService;
 use OC\Http\Client\NegativeDnsCache;
@@ -109,8 +110,8 @@ use OC\IntegrityCheck\Checker;
 use OC\IntegrityCheck\Helpers\AppLocator;
 use OC\IntegrityCheck\Helpers\EnvironmentHelper;
 use OC\IntegrityCheck\Helpers\FileAccessHelper;
-use OC\LDAP\NullLDAPProviderFactory;
 use OC\KnownUser\KnownUserService;
+use OC\LDAP\NullLDAPProviderFactory;
 use OC\Lock\DBLockingProvider;
 use OC\Lock\MemcacheLockingProvider;
 use OC\Lock\NoopLockingProvider;
@@ -120,15 +121,15 @@ use OC\Log\PsrLoggerAdapter;
 use OC\Mail\Mailer;
 use OC\Memcache\ArrayCache;
 use OC\Memcache\Factory;
-use OC\Metadata\Capabilities as MetadataCapabilities;
-use OC\Metadata\IMetadataManager;
-use OC\Metadata\MetadataManager;
 use OC\Notification\Manager;
+use OC\OCM\Model\OCMProvider;
 use OC\OCM\OCMDiscoveryService;
 use OC\OCS\DiscoveryService;
 use OC\Preview\GeneratorHelper;
 use OC\Preview\IMagickSupport;
 use OC\Preview\MimeIconProvider;
+use OC\Profile\ProfileManager;
+use OC\Profiler\Profiler;
 use OC\Remote\Api\ApiFactory;
 use OC\Remote\InstanceFactory;
 use OC\RichObjectStrings\Validator;
@@ -148,6 +149,7 @@ use OC\Security\SecureRandom;
 use OC\Security\TrustedDomainHelper;
 use OC\Security\VerificationToken\VerificationToken;
 use OC\Session\CryptoWrapper;
+use OC\SetupCheck\SetupCheckManager;
 use OC\Share20\ProviderFactory;
 use OC\Share20\ShareDisableChecker;
 use OC\Share20\ShareHelper;
@@ -157,10 +159,15 @@ use OC\Tagging\TagMapper;
 use OC\Talk\Broker;
 use OC\Template\JSCombiner;
 use OC\Translation\TranslationManager;
+use OC\User\AvailabilityCoordinator;
 use OC\User\DisplayNameCache;
 use OC\User\Listeners\BeforeUserDeletedListener;
 use OC\User\Listeners\UserChangedListener;
 use OC\User\Session;
+use OCA\Files_External\Service\BackendService;
+use OCA\Files_External\Service\GlobalStoragesService;
+use OCA\Files_External\Service\UserGlobalStoragesService;
+use OCA\Files_External\Service\UserStoragesService;
 use OCA\Theming\ImageManager;
 use OCA\Theming\ThemingDefaults;
 use OCA\Theming\Util;
@@ -193,16 +200,17 @@ use OCP\Files\Lock\ILockManager;
 use OCP\Files\Mount\IMountManager;
 use OCP\Files\Storage\IStorageFactory;
 use OCP\Files\Template\ITemplateManager;
+use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\FullTextSearch\IFullTextSearchManager;
 use OCP\GlobalScale\IConfig;
 use OCP\Group\ISubAdmin;
 use OCP\Http\Client\IClientService;
 use OCP\IAppConfig;
 use OCP\IAvatarManager;
+use OCP\IBinaryFinder;
 use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\ICertificateManager;
-use OCP\IBinaryFinder;
 use OCP\IDateTimeFormatter;
 use OCP\IDateTimeZone;
 use OCP\IDBConnection;
@@ -232,6 +240,10 @@ use OCP\Lockdown\ILockdownManager;
 use OCP\Log\ILogFactory;
 use OCP\Mail\IMailer;
 use OCP\OCM\IOCMDiscoveryService;
+use OCP\OCM\IOCMProvider;
+use OCP\Preview\IMimeIconProvider;
+use OCP\Profile\IProfileManager;
+use OCP\Profiler\IProfiler;
 use OCP\Remote\Api\IApiFactory;
 use OCP\Remote\IInstanceFactory;
 use OCP\RichObjectStrings\IValidator;
@@ -245,6 +257,7 @@ use OCP\Security\ISecureRandom;
 use OCP\Security\ITrustedDomainHelper;
 use OCP\Security\RateLimiting\ILimiter;
 use OCP\Security\VerificationToken\IVerificationToken;
+use OCP\SetupCheck\ISetupCheckManager;
 use OCP\Share\IShareHelper;
 use OCP\SpeechToText\ISpeechToTextManager;
 use OCP\SystemTag\ISystemTagManager;
@@ -260,16 +273,10 @@ use OCP\User\Events\UserChangedEvent;
 use OCP\User\Events\UserLoggedInEvent;
 use OCP\User\Events\UserLoggedInWithCookieEvent;
 use OCP\User\Events\UserLoggedOutEvent;
+use OCP\User\IAvailabilityCoordinator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use OCA\Files_External\Service\UserStoragesService;
-use OCA\Files_External\Service\UserGlobalStoragesService;
-use OCA\Files_External\Service\GlobalStoragesService;
-use OCA\Files_External\Service\BackendService;
-use OCP\Profiler\IProfiler;
-use OC\Profiler\Profiler;
-use OCP\Preview\IMimeIconProvider;
 
 /**
  * Class Server
@@ -1128,9 +1135,6 @@ class Server extends ServerContainer implements IServerContainer {
 			$manager->registerCapability(function () use ($c) {
 				return $c->get(\OC\Security\Bruteforce\Capabilities::class);
 			});
-			$manager->registerCapability(function () use ($c) {
-				return $c->get(MetadataCapabilities::class);
-			});
 			return $manager;
 		});
 		/** @deprecated 19.0.0 */
@@ -1395,6 +1399,7 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerAlias(\OCP\Dashboard\IManager::class, \OC\Dashboard\Manager::class);
 
 		$this->registerAlias(IFullTextSearchManager::class, FullTextSearchManager::class);
+		$this->registerAlias(IFilesMetadataManager::class, FilesMetadataManager::class);
 
 		$this->registerAlias(ISubAdmin::class, SubAdmin::class);
 
@@ -1405,8 +1410,6 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerAlias(\OCP\UserStatus\IManager::class, \OC\UserStatus\Manager::class);
 
 		$this->registerAlias(IBroker::class, Broker::class);
-
-		$this->registerAlias(IMetadataManager::class, MetadataManager::class);
 
 		$this->registerAlias(\OCP\Files\AppData\IAppDataFactory::class, \OC\Files\AppData\Factory::class);
 
@@ -1422,9 +1425,19 @@ class Server extends ServerContainer implements IServerContainer {
 
 		$this->registerAlias(\OCP\TextProcessing\IManager::class, \OC\TextProcessing\Manager::class);
 
+		$this->registerAlias(\OCP\TextToImage\IManager::class, \OC\TextToImage\Manager::class);
+
 		$this->registerAlias(ILimiter::class, Limiter::class);
 
 		$this->registerAlias(IPhoneNumberUtil::class, PhoneNumberUtil::class);
+
+		$this->registerAlias(IOCMProvider::class, OCMProvider::class);
+
+		$this->registerAlias(ISetupCheckManager::class, SetupCheckManager::class);
+
+		$this->registerAlias(IProfileManager::class, ProfileManager::class);
+
+		$this->registerAlias(IAvailabilityCoordinator::class, AvailabilityCoordinator::class);
 
 		$this->connectDispatcher();
 	}
@@ -1466,6 +1479,8 @@ class Server extends ServerContainer implements IServerContainer {
 		$eventDispatcher->addServiceListener(PostLoginEvent::class, UserLoggedInListener::class);
 		$eventDispatcher->addServiceListener(UserChangedEvent::class, UserChangedListener::class);
 		$eventDispatcher->addServiceListener(BeforeUserDeletedEvent::class, BeforeUserDeletedListener::class);
+
+		FilesMetadataManager::loadListeners($eventDispatcher);
 	}
 
 	/**

@@ -2080,7 +2080,7 @@
       <code>$trySession</code>
     </RedundantCondition>
   </file>
-  <file src="lib/private/Authentication/Token/IToken.php">
+  <file src="lib/public/Authentication/Token/IToken.php">
     <AmbiguousConstantInheritance>
       <code>DO_NOT_REMEMBER</code>
       <code>PERMANENT_TOKEN</code>
@@ -3075,14 +3075,7 @@
   <file src="lib/private/Preview/Generator.php">
     <InvalidArgument>
       <code>$maxPreviewImage</code>
-      <code>$semId</code>
     </InvalidArgument>
-    <InvalidReturnStatement>
-      <code>$sem</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code>false|resource</code>
-    </InvalidReturnType>
     <LessSpecificReturnType>
       <code>null|string</code>
     </LessSpecificReturnType>

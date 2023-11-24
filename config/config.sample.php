@@ -229,6 +229,16 @@ $CONFIG = [
 'force_locale' => 'en_US',
 
 /**
+ * This sets the default timezone on your Nextcloud server, using IANA
+ * identifiers like ``Europe/Berlin`` or ``Pacific/Auckland``. The default
+ * timezone parameter is only used when the timezone of the user can't be
+ * determined.
+ *
+ * Defaults to ``UTC``
+ */
+'default_timezone' => 'Europe/Berlin',
+
+/**
  * ``true`` enables the Help menu item in the user menu (top right of the
  * Nextcloud Web interface). ``false`` removes the Help item.
  */
@@ -1237,14 +1247,6 @@ $CONFIG = [
  * Defaults to ``''`` (empty string)
  */
 'preview_libreoffice_path' => '/usr/bin/libreoffice',
-/**
- * Use this if LibreOffice/OpenOffice requires additional arguments.
- *
- * Defaults to ``''`` (empty string)
- */
-'preview_office_cl_parameters' =>
-	' --headless --nologo --nofirststartwizard --invisible --norestore '.
-	'--convert-to png --outdir ',
 
 /**
  * custom path for ffmpeg binary
@@ -1285,6 +1287,7 @@ $CONFIG = [
  *  - ``OC\Preview\StarOffice``
  *  - ``OC\Preview\SVG``
  *  - ``OC\Preview\TIFF``
+ *  - ``OC\Preview\EMF``
  *
  *
  * Defaults to the following providers:
@@ -1945,7 +1948,7 @@ $CONFIG = [
  *
  * Example for windows systems: ``array('?', '<', '>', ':', '*', '|', '"', chr(0), "\n", "\r")``
  * see https://en.wikipedia.org/wiki/Comparison_of_file_systems#Limits
- * 
+ *
  * Defaults to ``array()``
  */
 'forbidden_chars' => [],
@@ -1961,7 +1964,7 @@ $CONFIG = [
 /**
  * Enforce the user theme. This will disable the user theming settings
  * This must be a valid ITheme ID.
- * E.g. light, dark, highcontrast, dark-highcontrast...
+ * E.g. dark, dark-highcontrast, default, light, light-highcontrast, opendyslexic
  */
 'enforce_theme' => '',
 
@@ -2395,4 +2398,11 @@ $CONFIG = [
  * Defaults to ``true``
  */
 'reference_opengraph' => true,
+
+/**
+ * Enable use of old unified search
+ *
+ * Defaults to ``false``
+ */
+'unified_search.enabled' => false,
 ];

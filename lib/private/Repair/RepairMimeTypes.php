@@ -49,7 +49,7 @@ class RepairMimeTypes implements IRepairStep {
 	protected $folderMimeTypeId;
 
 	public function __construct(IConfig $config,
-								IDBConnection $connection) {
+		IDBConnection $connection) {
 		$this->config = $config;
 		$this->connection = $connection;
 	}
@@ -229,6 +229,13 @@ class RepairMimeTypes implements IRepairStep {
 		return $this->updateMimetypes($updatedMimetypes);
 	}
 
+	private function introduceEnhancedMetafileFormatType() {
+		$updatedMimetypes = [
+			'emf' => 'image/emf',
+		];
+
+		return $this->updateMimetypes($updatedMimetypes);
+	}
 
 	/**
 	 * Fix mime types
@@ -285,6 +292,10 @@ class RepairMimeTypes implements IRepairStep {
 
 		if (version_compare($ocVersionFromBeforeUpdate, '26.0.0.1', '<') && $this->introduceAsciidocType()) {
 			$out->info('Fixed AsciiDoc mime types');
+		}
+
+		if (version_compare($ocVersionFromBeforeUpdate, '28.0.0.5', '<') && $this->introduceEnhancedMetafileFormatType()) {
+			$out->info('Fixed Enhanced Metafile Format mime types');
 		}
 	}
 }

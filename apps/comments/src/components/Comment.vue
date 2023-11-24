@@ -92,7 +92,7 @@
 					</div>
 				</div>
 				<div id="tab-comments__editor-description" class="comment__editor-description">
-					{{ t('comments', '"@" for mentions, ":" for emoji, "/" for smart picker') }}
+					{{ t('comments', '@ for mentions, : for emoji, / for smart picker') }}
 				</div>
 			</form>
 
@@ -111,6 +111,7 @@
 
 <script>
 import { getCurrentUser } from '@nextcloud/auth'
+import { translate as t } from '@nextcloud/l10n'
 import moment from '@nextcloud/moment'
 
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
@@ -235,6 +236,8 @@ export default {
 	},
 
 	methods: {
+		t,
+
 		/**
 		 * Update local Message on outer change
 		 *
@@ -279,13 +282,13 @@ $comment-padding: 10px;
 
 .comment {
 	display: flex;
-	gap: 16px;
+	gap: 8px;
 	padding: 5px $comment-padding;
 
 	&__side {
 		display: flex;
 		align-items: flex-start;
-		padding-top: 16px;
+		padding-top: 6px;
 	}
 
 	&__body {

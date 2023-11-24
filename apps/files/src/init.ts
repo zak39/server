@@ -19,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import MenuIcon from '@mdi/svg/svg/sun-compass.svg?raw'
+import { FileAction, addNewFileMenuEntry, registerDavProperty, registerFileAction } from '@nextcloud/files'
+
 import { action as deleteAction } from './actions/deleteAction'
 import { action as downloadAction } from './actions/downloadAction'
 import { action as editLocallyAction } from './actions/editLocallyAction'
@@ -35,7 +38,10 @@ import registerFavoritesView from './views/favorites'
 import registerRecentView from './views/recent'
 import registerFilesView from './views/files'
 import registerPreviewServiceWorker from './services/ServiceWorker.js'
-import { addNewFileMenuEntry, registerFileAction } from '@nextcloud/files'
+
+import './init-templates'
+
+import { initLivePhotos } from './services/LivePhotos'
 
 // Register file actions
 registerFileAction(deleteAction)
@@ -59,3 +65,7 @@ registerRecentView()
 
 // Register preview service worker
 registerPreviewServiceWorker()
+
+registerDavProperty('nc:hidden', { nc: 'http://nextcloud.org/ns' })
+
+initLivePhotos()

@@ -14,12 +14,11 @@ OC.L10N.register(
     "Remove version name" : "Odstrániť názov verzie",
     "Save version name" : "Uložiť názov verzie",
     "Current version" : "Aktuálna verzia",
+    "Initial version" : "Úvodná verzia",
+    "Initial version restored" : "Úvodná verzia bola obnovená",
     "Version restored" : "Verzia bola obnovená",
     "Could not restore version" : "Nepodarilo sa obnoviť verziu",
     "Could not delete version" : "Nepodarilo sa odstrániť verziu",
-    "Failed to revert {file} to revision {timestamp}." : "Zlyhalo obnovenie súboru {file} na verziu {timestamp}.",
-    "_%n byte_::_%n bytes_" : ["%n bajt","%n bajtov","%n bajtov","%n bajtov"],
-    "Restore" : "Obnoviť",
-    "No other versions available" : "Žiadne ďalšie verzie nie sú dostupné"
+    "${version.label} restored" : "${version.label} obnovené"
 },
 "nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);");
