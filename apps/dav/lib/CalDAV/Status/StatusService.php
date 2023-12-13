@@ -1,27 +1,4 @@
 <?php
-/*
- * *
- *  * Dav App
- *  *
- *  * @copyright 2023 Anna Larch <anna.larch@gmx.net>
- *  *
- *  * @author Anna Larch <anna.larch@gmx.net>
- *  *
- *  * This library is free software; you can redistribute it and/or
- *  * modify it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE
- *  * License as published by the Free Software Foundation; either
- *  * version 3 of the License, or any later version.
- *  *
- *  * This library is distributed in the hope that it will be useful,
- *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  * GNU AFFERO GENERAL PUBLIC LICENSE for more details.
- *  *
- *  * You should have received a copy of the GNU Affero General Public
- *  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- *  *
- *
- */
 
 declare(strict_types=1);
 
@@ -66,7 +43,6 @@ use Sabre\VObject\Component;
 use Sabre\VObject\Component\VEvent;
 use Sabre\VObject\Parameter;
 use Sabre\VObject\Property;
-use Sabre\VObject\Reader;
 
 class StatusService {
 	public function __construct(private ITimeFactory $timeFactory,
@@ -76,7 +52,7 @@ class StatusService {
 		private FreeBusyGenerator $generator) {
 	}
 
-	public function processCalendarAvailability(User $user, ?string $availability): ?Status {
+	public function processCalendarAvailability(User $user): ?Status {
 		$userId = $user->getUID();
 		$email = $user->getEMailAddress();
 		if($email === null) {
@@ -160,8 +136,7 @@ class StatusService {
 		}
 
 		// @todo we can cache that
-		if(empty($availability) && empty($calendarEvents)) {
-			// No availability settings and no calendar events, we can stop here
+		if(empty($calendarEvents)) {
 			return null;
 		}
 
@@ -181,15 +156,6 @@ class StatusService {
 		$this->generator->setObjects($calendar);
 		$this->generator->setTimeRange($dtStart, $dtEnd);
 		$this->generator->setTimeZone($calendarTimeZone);
-
-		if (!empty($availability)) {
-			$this->generator->setVAvailability(
-				Reader::read(
-					$availability
-				)
-			);
-		}
-		// Generate the intersection of VAVILABILITY and all VEVENTS in all calendars
 		$result = $this->generator->getResult();
 
 		if (!isset($result->VFREEBUSY)) {
@@ -200,9 +166,8 @@ class StatusService {
 		$freeBusyComponent = $result->VFREEBUSY;
 		$freeBusyProperties = $freeBusyComponent->select('FREEBUSY');
 		// If there is no FreeBusy property, the time-range is empty and available
-		// so set the status to online as otherwise we will never recover from a BUSY status
 		if (count($freeBusyProperties) === 0) {
-			return new Status(IUserStatus::ONLINE);
+			return null;
 		}
 
 		/** @var Property $freeBusyProperty */
@@ -220,12 +185,10 @@ class StatusService {
 		}
 		$fbType = $fbTypeParameter->getValue();
 		switch ($fbType) {
+			// Ignore BUSY-UNAVAILABLE, that's for the automation
 			case 'BUSY':
-				return new Status(IUserStatus::BUSY, IUserStatus::MESSAGE_CALENDAR_BUSY, $this->l10n->t('In a meeting'));
-			case 'BUSY-UNAVAILABLE':
-				return new Status(IUserStatus::AWAY, IUserStatus::MESSAGE_AVAILABILITY);
 			case 'BUSY-TENTATIVE':
-				return new Status(IUserStatus::AWAY, IUserStatus::MESSAGE_CALENDAR_BUSY_TENTATIVE);
+				return new Status(IUserStatus::BUSY, IUserStatus::MESSAGE_CALENDAR_BUSY, $this->l10n->t('In a meeting'));
 			default:
 				return null;
 		}

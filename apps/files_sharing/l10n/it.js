@@ -227,6 +227,7 @@ OC.L10N.register(
     "_Restore share_::_Restore shares_" : ["Ripristina condivisione","Ripristina condivisioni","Ripristina condivisioni"],
     "Shared" : "Condiviso",
     "Shared by {ownerDisplayName}" : "Condiviso da {ownerDisplayName}",
+    "Show sharing options" : "Mostra le opzioni di condivisione",
     "Link to a file" : "Collega a un file",
     "Error creating the share: {errorMessage}" : "Errore durante la creazione della condivisione: {errorMessage}",
     "Error creating the share" : "Errore durante la creazione della condivisione",
